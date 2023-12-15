@@ -152,7 +152,7 @@ int main(int, char **)
         int my_image_width = 0;
         int my_image_height = 0;
         GLuint my_image_texture = 0;
-        bool ret = LoadTextureFromFile("OPTIONSBG3.jpg", &my_image_texture, &my_image_width, &my_image_height);
+        bool ret = LoadTextureFromFile(OPTIONSBG3, &my_image_texture, &my_image_width, &my_image_height);
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;

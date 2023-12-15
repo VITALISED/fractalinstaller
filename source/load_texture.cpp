@@ -3,12 +3,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-bool LoadTextureFromFile(const char *filename, GLuint *out_texture, int *out_width, int *out_height)
+bool LoadTextureFromFile(const unsigned char *filename, GLuint *out_texture, int *out_width, int *out_height)
 {
     // Load from file
     int image_width = 0;
     int image_height = 0;
-    unsigned char *image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+    unsigned char *image_data = stbi_load_from_memory(filename, 130853, &image_width, &image_height, NULL, 4);
     if (image_data == NULL)
         return false;
 
