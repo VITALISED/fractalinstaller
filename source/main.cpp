@@ -20,6 +20,7 @@
 #include "images/background.h"
 #include "load_texture.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <Windows.h>
 #include <iostream>
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
@@ -64,6 +65,7 @@ int main(int, char **)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+
 #endif
 
     int width = 380; // could declare them as "const int" if you like
@@ -96,6 +98,17 @@ int main(int, char **)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     // ImGui::StyleColorsLight();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.FrameRounding = 5;
+    style.WindowRounding = 5;
+    style.FrameBorderSize = 0.3;
+    style.FramePadding = ImVec2(15, 4);
+    style.Colors[ImGuiCol_Button] = ImVec4(0.042, 0.09, 0.08, 0.1);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.042, 0.09, 0.08, 0.3);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.042, 0.09, 0.08, 0.2);
+
+    style.Colors[ImGuiCol_Border] = ImVec4(0.2, 0.2, 0.2, 0.9);
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -169,21 +182,32 @@ int main(int, char **)
 
             ImGui::PushFont(nms_font);
 
-            const char *subtitle_text = "This is WIP, if you have issues message @vitalised on discord";
+            const char *subtitle_text = "This is a Work In Progress, if you have issues join the discord";
             ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(subtitle_text).x) * 0.5);
             ImGui::Text(subtitle_text);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 3));
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+
+            const char *server_link = "https://discord.gg/SbEQFsJxNV";
+            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(server_link).x - 20) * 0.5);
+            if (ImGui::Button(server_link))
+                ShellExecuteA(NULL, "open", server_link, NULL, NULL, SW_SHOWDEFAULT);
+            ImGui::PopStyleColor(2);
+            ImGui::PopStyleVar();
 
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 300);
             ImGui::PopFont();
 
             ImGui::PushFont(nms_font_medium);
             const char *begin_text = "Begin Installation";
-            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(begin_text).x) * 0.5);
+            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(begin_text).x - 20) * 0.5);
             if (ImGui::Button(begin_text)) // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;
 
             const char *exit_text = "Exit";
-            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(exit_text).x) * 0.5);
+            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(exit_text).x - 20) * 0.5);
             if (ImGui::Button(exit_text)) // Buttons return true when clicked (most widgets return true when edited/activated)
                 exit(0);
 
