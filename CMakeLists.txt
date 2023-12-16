@@ -42,7 +42,13 @@ set(INSTALLER_SOURCES
     source/images/background.h
     source/stb_image.h
     source/create_fonts.h
-    source/create_fonts.cpp)
+    source/create_fonts.cpp
+    source/installer_state.h
+    source/installer_state.cpp
+    source/states/start.h
+    source/states/start.cpp
+    source/states/promptuseexistinginstall.h
+    source/states/promptuseexistinginstall.cpp)
 
 add_executable(installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES}
                          ${IMGUI_SOURCES} ${OPENGL_INCLUDE_DIR})

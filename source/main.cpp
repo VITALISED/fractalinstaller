@@ -18,7 +18,10 @@
 #include "create_fonts.h"
 #include "fonts/segoe_ui.h"
 #include "images/background.h"
+#include "installer_state.h"
 #include "load_texture.h"
+#include "states/promptuseexistinginstall.h"
+#include "states/start.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 #include <Windows.h>
 #include <iostream>
@@ -100,10 +103,10 @@ int main(int, char **)
     // ImGui::StyleColorsLight();
 
     ImGuiStyle &style = ImGui::GetStyle();
-    style.FrameRounding = 5;
-    style.WindowRounding = 5;
-    style.FrameBorderSize = 0.3;
-    style.FramePadding = ImVec2(15, 4);
+    style.FrameRounding = 2;
+    style.WindowRounding = 2;
+    style.FrameBorderSize = 0.2;
+    style.FramePadding = ImVec2(15, 3);
     style.Colors[ImGuiCol_Button] = ImVec4(0.042, 0.09, 0.08, 0.1);
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.042, 0.09, 0.08, 0.3);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.042, 0.09, 0.08, 0.2);
@@ -166,6 +169,7 @@ int main(int, char **)
         int my_image_height = 0;
         GLuint my_image_texture = 0;
         bool ret = LoadTextureFromFile(OPTIONSBG3, &my_image_texture, &my_image_width, &my_image_height);
+        eInstallerState installer_state = GetInstallerState();
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
@@ -200,25 +204,26 @@ int main(int, char **)
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 300);
             ImGui::PopFont();
 
-            ImGui::PushFont(nms_font_medium);
-            const char *begin_text = "Begin Installation";
-            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(begin_text).x - 20) * 0.5);
-            if (ImGui::Button(begin_text)) // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
+            switch (installer_state)
+            {
+            case EInstallerState_Start:
+                DoStartState(nms_font_medium);
+                break;
+            case EInstallerState_CheckShouldUseExistingInstall:
+                DoPromptInstallState(nms_font_medium, nms_font);
+                break;
+            default:
+                break;
+            }
 
-            const char *exit_text = "Exit";
-            ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(exit_text).x - 20) * 0.5);
-            if (ImGui::Button(exit_text)) // Buttons return true when clicked (most widgets return true when edited/activated)
-                exit(0);
-
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 140);
-            ImGui::PopFont();
-
+#ifdef _DEBUG
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 110);
             ImGui::PushFont(nms_font);
             const char *debug_text = "Application average %.3f ms/frame (%.1f FPS)";
             ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(debug_text).x - 20) * 0.5);
             ImGui::Text(debug_text, 1000.0f / io.Framerate, io.Framerate);
             ImGui::PopFont();
+#endif
             ImGui::End();
         }
 
