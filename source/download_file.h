@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Windows.h>
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>

@@ -15,7 +15,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838")
 
 find_package(OpenGL)
-find_package(CURL)
 
 add_subdirectory(glfw)
 
@@ -54,6 +53,10 @@ set(INSTALLER_SOURCES
     source/states/depotdownloader.cpp
     source/download_file.h
     source/download_file.cpp)
+
+set(LIBZIP_DO_INSTALL OFF)
+set(BUILD_SHARED_LIBS OFF)
+set(CURL_STATICLIB ON)
 
 add_subdirectory(curl)
 

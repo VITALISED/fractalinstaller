@@ -4,12 +4,9 @@
 [submodule "glfw"]
 	path = glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "glad"]
-	path = glad
-	url = https://github.com/Dav1dde/glad.git
-[submodule "curl"]
-	path = curl
-	url = https://github.com/curl/curl.git
-[submodule "libzip"]
-	path = libzip
-	url = https://github.com/nih-at/libzip.git
+[submodule "include/miniz-cpp"]
+	path = include/miniz-cpp
+	url = https://github.com/tfussell/miniz-cpp.git
+[submodule "curl-for-windows"]
+	path = curl-for-windows
+	url = https://github.com/peters/curl-for-windows.git
