@@ -15,6 +15,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838")
 
 find_package(OpenGL)
+find_package(CURL)
 
 add_subdirectory(glfw)
 
@@ -48,12 +49,19 @@ set(INSTALLER_SOURCES
     source/states/start.h
     source/states/start.cpp
     source/states/promptuseexistinginstall.h
-    source/states/promptuseexistinginstall.cpp)
+    source/states/promptuseexistinginstall.cpp
+    source/states/depotdownloader.h
+    source/states/depotdownloader.cpp
+    source/download_file.h
+    source/download_file.cpp)
+
+add_subdirectory(curl)
 
 add_executable(installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES}
                          ${IMGUI_SOURCES} ${OPENGL_INCLUDE_DIR})
 
-target_link_libraries(installer PRIVATE glfw ${OPENGL_LIBRARIES})
+target_link_libraries(installer PRIVATE libcurl_static glfw ${OPENGL_LIBRARIES})
 
-target_include_directories(installer PRIVATE ${CMAKE_SOURCE_DIR}/imgui
-                                             ${CMAKE_SOURCE_DIR}/glfw/include)
+target_include_directories(
+  installer PRIVATE ${CMAKE_SOURCE_DIR}/imgui ${CMAKE_SOURCE_DIR}/glfw/include
+                    ${CMAKE_SOURCE_DIR}/curl/include)

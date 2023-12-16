@@ -16,10 +16,12 @@
 #include <GLES2/gl2.h>
 #endif
 #include "create_fonts.h"
+#include "download_file.h"
 #include "fonts/segoe_ui.h"
 #include "images/background.h"
 #include "installer_state.h"
 #include "load_texture.h"
+#include "states/depotdownloader.h"
 #include "states/promptuseexistinginstall.h"
 #include "states/start.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
@@ -41,6 +43,8 @@ static void glfw_error_callback(int error, const char *description)
 // Main code
 int main(int, char **)
 {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -139,6 +143,11 @@ int main(int, char **)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    int my_image_width = 0;
+    int my_image_height = 0;
+    GLuint my_image_texture = 0;
+    bool ret = LoadTextureFromFile(OPTIONSBG3, &my_image_texture, &my_image_width, &my_image_height);
+
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -165,11 +174,6 @@ int main(int, char **)
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
 
-        int my_image_width = 0;
-        int my_image_height = 0;
-        GLuint my_image_texture = 0;
-        bool ret = LoadTextureFromFile(OPTIONSBG3, &my_image_texture, &my_image_width, &my_image_height);
-        eInstallerState installer_state = GetInstallerState();
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
@@ -204,13 +208,16 @@ int main(int, char **)
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 300);
             ImGui::PopFont();
 
-            switch (installer_state)
+            switch (GetInstallerState())
             {
             case EInstallerState_Start:
                 DoStartState(nms_font_medium);
                 break;
             case EInstallerState_CheckShouldUseExistingInstall:
                 DoPromptInstallState(nms_font_medium, nms_font);
+                break;
+            case EInstallerState_DownloadFractal:
+                DoDepotDownloader(nms_font_medium, nms_font);
                 break;
             default:
                 break;
@@ -243,6 +250,7 @@ int main(int, char **)
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    curl_global_cleanup();
 
     glfwDestroyWindow(window);
     glfwTerminate();
