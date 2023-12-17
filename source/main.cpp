@@ -16,16 +16,19 @@
 #include <GLES2/gl2.h>
 #endif
 #include "create_fonts.h"
-#include "download_file.h"
 #include "fonts/segoe_ui.h"
 #include "images/background.h"
 #include "installer_state.h"
 #include "load_texture.h"
 #include "states/depotdownloader.h"
+#include "states/dodownloadfractal.h"
+#include "states/downloadrenms.h"
 #include "states/promptuseexistinginstall.h"
 #include "states/start.h"
+#include "states/steamcredsinput.h"
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 #include <Windows.h>
+#include <curl/curl.h>
 #include <iostream>
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
@@ -44,7 +47,6 @@ static void glfw_error_callback(int error, const char *description)
 int main(int, char **)
 {
     curl_global_init(CURL_GLOBAL_DEFAULT);
-
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -107,15 +109,19 @@ int main(int, char **)
     // ImGui::StyleColorsLight();
 
     ImGuiStyle &style = ImGui::GetStyle();
-    style.FrameRounding = 2;
-    style.WindowRounding = 2;
-    style.FrameBorderSize = 0.2;
-    style.FramePadding = ImVec2(15, 3);
+    style.WindowRounding = 1;
+    style.FrameBorderSize = 0.05;
+    style.FramePadding = ImVec2(10, 2.5);
+    style.FrameRounding = 5.f;
+    style.GrabRounding = 3.f;
+    style.ChildRounding = 3.f;
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.042, 0.09, 0.08, 0.1);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.042, 0.09, 0.08, 0.3);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.042, 0.09, 0.08, 0.2);
     style.Colors[ImGuiCol_Button] = ImVec4(0.042, 0.09, 0.08, 0.1);
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.042, 0.09, 0.08, 0.3);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.042, 0.09, 0.08, 0.2);
-
-    style.Colors[ImGuiCol_Border] = ImVec4(0.2, 0.2, 0.2, 0.9);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.2, 0.2, 0.2, 0.5);
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -190,7 +196,7 @@ int main(int, char **)
 
             ImGui::PushFont(nms_font);
 
-            const char *subtitle_text = "This is a Work In Progress, if you have issues join the discord";
+            const char *subtitle_text = "Work In Progress. Join the Discord if you have issues using it";
             ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(subtitle_text).x) * 0.5);
             ImGui::Text(subtitle_text);
 
@@ -219,6 +225,15 @@ int main(int, char **)
             case EInstallerState_DownloadFractal:
                 DoDepotDownloader(nms_font_medium, nms_font);
                 break;
+            case EInstallerState_DoDepotDownloadShit:
+                DoFractalDownload(nms_font_medium, nms_font);
+                break;
+            case EInstallerState_HandleSteamCredentialsInput:
+                DoSteamCredsInput(nms_font_medium, nms_font);
+                break;
+            case EInstallerState_DownloadReNMS:
+                DoDownloadReNMS(nms_font_medium, nms_font);
+                break;
             default:
                 break;
             }
@@ -245,12 +260,12 @@ int main(int, char **)
 
         glfwSwapBuffers(window);
     }
+    curl_global_cleanup();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    curl_global_cleanup();
 
     glfwDestroyWindow(window);
     glfwTerminate();

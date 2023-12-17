@@ -14,7 +14,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838")
 
+# I am sorry to anyone who dares contribute to this, I got these files from
+# https://curl.se/windows/
+set(CURL_LIBRARY "C:/curl8/lib/libcurl.a")
+set(CURL_INCLUDE_DIR "C:/curl8/include")
+
 find_package(OpenGL)
+find_package(CURL)
 
 add_subdirectory(glfw)
 
@@ -52,19 +58,25 @@ set(INSTALLER_SOURCES
     source/states/depotdownloader.h
     source/states/depotdownloader.cpp
     source/download_file.h
-    source/download_file.cpp)
+    source/download_file.cpp
+    source/states/dodownloadfractal.h
+    source/states/dodownloadfractal.cpp
+    source/grab_folder_dialog.h
+    source/grab_folder_dialog.cpp
+    source/states/steamcredsinput.h
+    source/states/steamcredsinput.cpp
+    source/child_process_handler.h
+    source/states/downloadrenms.h
+    source/states/downloadrenms.cpp)
 
-set(LIBZIP_DO_INSTALL OFF)
-set(BUILD_SHARED_LIBS OFF)
-set(CURL_STATICLIB ON)
+add_executable(
+  installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES} ${IMGUI_SOURCES}
+            ${OPENGL_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
 
-add_subdirectory(curl)
+target_compile_definitions(installer PRIVATE NOMINMAX)
 
-add_executable(installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES}
-                         ${IMGUI_SOURCES} ${OPENGL_INCLUDE_DIR})
-
-target_link_libraries(installer PRIVATE libcurl_static glfw ${OPENGL_LIBRARIES})
+target_link_libraries(installer PRIVATE glfw ${OPENGL_LIBRARIES} shell32.lib)
 
 target_include_directories(
   installer PRIVATE ${CMAKE_SOURCE_DIR}/imgui ${CMAKE_SOURCE_DIR}/glfw/include
-                    ${CMAKE_SOURCE_DIR}/curl/include)
+                    ${CMAKE_SOURCE_DIR}/include CURL::libcurl)

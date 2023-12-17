@@ -7,6 +7,3 @@
 [submodule "include/miniz-cpp"]
 	path = include/miniz-cpp
 	url = https://github.com/tfussell/miniz-cpp.git
-[submodule "curl-for-windows"]
-	path = curl-for-windows
-	url = https://github.com/peters/curl-for-windows.git
