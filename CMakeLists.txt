@@ -16,7 +16,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838")
 
 # I am sorry to anyone who dares contribute to this, I got these files from
 # https://curl.se/windows/
-set(CURL_LIBRARY "C:/curl8/lib/libcurl.a")
+set(CURL_LIBS_DIR "C:/curl8/lib/")
+set(CURL_LIBRARY "C:/curl8/lib/libcurl.lib")
 set(CURL_INCLUDE_DIR "C:/curl8/include")
 
 find_package(OpenGL)
@@ -67,7 +68,11 @@ set(INSTALLER_SOURCES
     source/states/steamcredsinput.cpp
     source/child_process_handler.h
     source/states/downloadrenms.h
-    source/states/downloadrenms.cpp)
+    source/states/downloadrenms.cpp
+    source/states/finaliseinstall.h
+    source/states/finaliseinstall.cpp
+    source/states/finished.h
+    source/states/finished.cpp)
 
 add_executable(
   installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES} ${IMGUI_SOURCES}
@@ -75,7 +80,8 @@ add_executable(
 
 target_compile_definitions(installer PRIVATE NOMINMAX)
 
-target_link_libraries(installer PRIVATE glfw ${OPENGL_LIBRARIES} shell32.lib)
+target_link_libraries(installer PRIVATE glfw ${OPENGL_LIBRARIES} shell32.lib
+                                        ${CURL_LIBARIES})
 
 target_include_directories(
   installer PRIVATE ${CMAKE_SOURCE_DIR}/imgui ${CMAKE_SOURCE_DIR}/glfw/include

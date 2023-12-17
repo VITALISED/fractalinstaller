@@ -23,6 +23,8 @@
 #include "states/depotdownloader.h"
 #include "states/dodownloadfractal.h"
 #include "states/downloadrenms.h"
+#include "states/finaliseinstall.h"
+#include "states/finished.h"
 #include "states/promptuseexistinginstall.h"
 #include "states/start.h"
 #include "states/steamcredsinput.h"
@@ -196,7 +198,7 @@ int main(int, char **)
 
             ImGui::PushFont(nms_font);
 
-            const char *subtitle_text = "Work In Progress. Join the Discord if you have issues using it";
+            const char *subtitle_text = "Work In Progress. Join the Discord if you have issues.";
             ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(subtitle_text).x) * 0.5);
             ImGui::Text(subtitle_text);
 
@@ -233,6 +235,12 @@ int main(int, char **)
                 break;
             case EInstallerState_DownloadReNMS:
                 DoDownloadReNMS(nms_font_medium, nms_font);
+                break;
+            case EInstallerState_Finalise:
+                DoFinaliseInstall(nms_font_medium, nms_font);
+                break;
+            case EInstallerState_Finished:
+                DoFinishInstall(nms_font_medium, nms_font);
                 break;
             default:
                 break;

@@ -4,8 +4,6 @@ std::wstring GetSelectFolder()
 {
     // Initialize the COM library
     CoInitialize(nullptr);
-    // Initialize the COM library
-    CoInitialize(nullptr);
 
     IFileOpenDialog *pFileOpen;
 
@@ -64,4 +62,59 @@ std::wstring GetSelectFolder()
     CoUninitialize();
 
     return L"";
+}
+
+std::string OpenFileAndGetPath()
+{
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+    IFileOpenDialog *pFileOpen;
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void **>(&pFileOpen));
+
+    std::string selectedFilePath;
+
+    if (SUCCEEDED(hr))
+    {
+        DWORD dwOptions;
+        hr = pFileOpen->GetOptions(&dwOptions);
+        if (SUCCEEDED(hr))
+        {
+            hr = pFileOpen->SetOptions(dwOptions | FOS_FORCEFILESYSTEM);
+        }
+
+        COMDLG_FILTERSPEC fileTypes[] = {{L"No Man's Sky Executable", L"NMS.exe"}};
+        hr = pFileOpen->SetFileTypes(ARRAYSIZE(fileTypes), fileTypes);
+        hr = pFileOpen->SetFileTypeIndex(1); // Set the default file type index
+
+        if (SUCCEEDED(hr))
+        {
+            hr = pFileOpen->Show(NULL);
+            if (SUCCEEDED(hr))
+            {
+                IShellItem *pItem;
+                hr = pFileOpen->GetResult(&pItem);
+                if (SUCCEEDED(hr))
+                {
+                    PWSTR filePath;
+                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath);
+
+                    if (SUCCEEDED(hr))
+                    {
+                        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
+                        selectedFilePath = conv.to_bytes(filePath);
+                        // Free the allocated memory
+                        CoTaskMemFree(filePath);
+                    }
+
+                    pItem->Release();
+                }
+            }
+        }
+
+        pFileOpen->Release();
+    }
+
+    CoUninitialize();
+
+    return selectedFilePath;
 }

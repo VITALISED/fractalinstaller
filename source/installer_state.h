@@ -10,6 +10,7 @@ enum eInstallerState
     EInstallerState_DoDepotDownloadShit,
     EInstallerState_HandleSteamCredentialsInput,
     EInstallerState_DownloadReNMS,
+    EInstallerState_Finalise,
     EInstallerState_Finished,
 };
 
