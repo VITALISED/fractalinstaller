@@ -75,13 +75,16 @@ set(INSTALLER_SOURCES
     source/states/finished.cpp)
 
 add_executable(
-  installer ${INSTALLER_HEADERS} ${INSTALLER_SOURCES} ${IMGUI_SOURCES}
-            ${OPENGL_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
+  installer WIN32 ${INSTALLER_HEADERS} ${INSTALLER_SOURCES} ${IMGUI_SOURCES}
+                  ${OPENGL_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
 
 target_compile_definitions(installer PRIVATE NOMINMAX)
 
 target_link_libraries(installer PRIVATE glfw ${OPENGL_LIBRARIES} shell32.lib
                                         ${CURL_LIBARIES})
+
+set_target_properties(installer PROPERTIES LINK_OPTIONS
+                                           "/ENTRY:WinMainCRTStartup")
 
 target_include_directories(
   installer PRIVATE ${CMAKE_SOURCE_DIR}/imgui ${CMAKE_SOURCE_DIR}/glfw/include

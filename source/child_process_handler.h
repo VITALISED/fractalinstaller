@@ -79,7 +79,7 @@ private:
                                  NULL,
                                  NULL,
                                  TRUE,
-                                 0,
+                                 CREATE_NO_WINDOW,
                                  NULL,
                                  NULL,
                                  &siStartInfo,
